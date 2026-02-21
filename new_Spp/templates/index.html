@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Prediction System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-400 to-purple-500 p-6">
+
+    <div class="grid md:grid-cols-2 gap-6 w-full max-w-5xl bg-white rounded-2xl shadow-lg p-8">
+        <!-- Input Form -->
+        <div>
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">📊 Enter Your Details</h2>
+
+            <label class="block mb-2 font-medium">Years of Experience</label>
+            <input id="experience" type="number" placeholder="Enter years of experience"
+                class="w-full p-2 mb-4 border rounded-lg focus:ring focus:ring-indigo-300">
+
+            <label class="block mb-2 font-medium">Education Level</label>
+            <select id="education" class="w-full p-2 mb-4 border rounded-lg focus:ring focus:ring-indigo-300">
+                <option value="BTECH.">BTECH.</option>
+                <option value="MTECH.">MTECH.</option>
+                <option value="PHD">PHD</option>
+                <option value="bachelor's">Bachelor's</option>
+            </select>
+
+            <label class="block mb-2 font-medium">Job Title</label>
+            <select id="jobType" class="w-full p-2 mb-6 border rounded-lg focus:ring focus:ring-indigo-300">
+                <option value="UI/UX">UI/UX</option>
+                <option value="Data Scientist">Data Scientist</option>
+                <option value="DEVELOPER">DEVELOPER</option>
+                <option value="DATA  ANAYLIST">DATA  ANAYLIST</option>
+                <option value="GRAPHIC DESIGNER">GRAPHIC DESIGNER</option>
+                <option value="CONSULTANT">CONSULTANT</option>
+                <option value="TEACHER">TEACHER</option>
+                <option value="MANAGER">MANAGER</option>
+                <option value="SOFTWARE TESTER">SOFTWARE TESTER</option>
+            </select>
+
+            <button onclick="predictSalary()" class="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-lg hover:opacity-90 transition">
+                🧠 Predict Salary
+            </button>
+        </div>
+
+        <!-- Output Section -->
+        <div id="resultSection" class="flex flex-col items-center justify-center text-center">
+            <h2 class="text-2xl font-bold mb-4">🎯 Predicted Salary</h2>
+            <p class="text-3xl font-bold text-blue-600">$ <span id="predictedSalary">--</span></p>
+            <p class="mt-2 text-gray-500">Confidence: <span id="confidence">--</span>%</p>
+            <p class="mt-1 text-gray-500">Range: $<span id="lowerBound">--</span> - $<span id="upperBound">--</span></p>
+        </div>
+    </div>
+
+    <script>
+        async function predictSalary() {
+            const experience = document.getElementById('experience').value;
+            const education = document.getElementById('education').value;
+            const jobType = document.getElementById('jobType').value;
+
+            if (!experience || !education || !jobType) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ experience, education, jobType })
+                });
+
+                const data = await response.json();
+
+                document.getElementById('predictedSalary').innerText = data.predictedSalary;
+                document.getElementById('confidence').innerText = data.confidence;
+                document.getElementById('lowerBound').innerText = data.lowerBound;
+                document.getElementById('upperBound').innerText = data.upperBound;
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Something went wrong. Please check backend logs.');
+            }
+        }
+    </script>
+</body>
+</html>
